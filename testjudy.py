@@ -15,62 +15,6 @@ running = True
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-def restart_program():
-    """Restarts the current program.
-    Note: this function does not return. Any cleanup action (like
-    saving data) must be done before calling this function."""
-    python = sys.executable
-    os.execl(python, python, * sys.argv)
-
-#def killJudy():
-#    global running
-#    kill = "sudo killall pocketsphinx_continuous"
-#    subprocess.Popen(kill, shell=True)
-#    judy.__del__()
-#    judy.listen(None, None, None, callsign=None, attention_span=0, forever=False, running=False)
-    #running = False
-    #print running
-#    kill = "sudo killall pocketsphinx_continuous"
-#    subprocess.Popen(kill, shell=True)
-
-#def startJudy():
-#    judy.listen(vin, vout, handle, callsign='Pi', attention_span=10, forever=True, running=True)
-
-
-#def toggleVoiceCommands(channel):
-#    kill = "sudo killall pocketsphinx_continuous"
-#    subprocess.Popen(kill, shell=True)
-#    global running
-#    print "button pushed"
-#    print running
-#    if running == True:
-	#running = False
-#	print running
-#	killJudy()
-#        kill = "sudo killall pocketsphinx_continuous"
-#        subprocess.Popen(kill, shell=True)
-#        judy.__del__()
-#	judy.listen(None, None, None, callsign='Pi', attention_span=10, forever=True, running=False)
-	#judy.listen(None, None, None, callsign='Pi', attention_span=0, forever=False, running=False)
-	#judy.__del__()
-	
-#	running = False
-#	print running
-#    elif running == False:
-#	print running
-	#judy.listen(vin, vout, handle, callsign='Pi', attention_span=10, forever=True, running=True)
-#	startJudy()
-#	running = True
-	#restart_program()
-    #global running
-    #if running == True:
-    #    running = False
-    #else:
-    #    running = True
-
-
-#GPIO.add_event_detect(19, GPIO.FALLING, callback=toggleVoiceCommands, bouncetime=300)
-
 vin = judy.VoiceIn(adcdev='plughw:1,0',
                    lm='/home/pi/judy/1918.lm',
                    dict='/home/pi/judy/1918.dic')
@@ -137,24 +81,5 @@ def handle(phrase):
 	time.sleep(10)
 	killviewer = "sudo killall fbi"
 	subprocess.Popen(killviewer, shell=True)
-#	img1 = cv2.imread('/home/pi/'+first_line)
-#	cv2.imshow('Last Picture',img1)
-#	time.sleep(10)
-#	cv2.destroyAllWindows()
-
-#while True:
-#    pass
 
 judy.listen(vin, vout, handle, callsign='Pi', attention_span=10, forever=True)
-#while True:
-#    if running == True:
-#	print "running on"
-#        judy.listen(vin, vout, handle, callsign='Pi', attention_span=10, forever=True, running=True)
-#    else:
-#	#break
-
-#	print "running off"
-#	kill = "sudo killall pocketsphinx_continuous"
-#        subprocess.Popen(kill, shell=True)
-#	judy.listen(None, None, None, callsign='Pi', attention_span=0, forever=False, running=False)
-#	judy.listen(None, None, None, callsign=None, attention_span=None, forever=False)
