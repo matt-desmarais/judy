@@ -5,6 +5,26 @@ import os
 import time
 import tempfile
 import Queue as queue
+import RPi.GPIO as GPIO
+
+
+global running
+running = True
+
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(20, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+
+def toggleVoiceCommands(channel):
+    global running
+    if running == True:
+        running = False
+    else:
+        running = True
+
+GPIO.add_event_detect(20, GPIO.FALLING, callback=toggleVoiceCommands, bouncetime=300)
+
 
 class VoiceIn(threading.Thread):
     def __init__(self, **params):
@@ -39,7 +59,12 @@ class VoiceIn(threading.Thread):
         for out in execute(cmd):
             # Print out the line to give the same experience as
             # running pocketsphinx_continuous.
-            print out,  # newline included by the line itself
+            if "READY..." in out:
+		print "READY!!!"
+	        subprocess.Popen(["aplay", "/home/pi/bleep_01.wav"])
+		#subprocess.call(['echo', 'Hello $USER'], shell=True)
+		#subprocess.Popen(["espeak", "-ven+f3", "-k5", "-s150", "Ready"])
+	    print out,  # newline included by the line itself
             if self._listening:
                 m = pattern.match(out)
                 if m:
@@ -69,7 +94,7 @@ class VoiceOut(object):
         with tempfile.NamedTemporaryFile(suffix='.wav', delete=False) as f:
             fname = f.name
 
-        cmd = ['pico2wave', '--wave', fname, phrase.lower()]
+        cmd = ['pico2wave', '--wave', fname, "<volume level='50'> "+phrase.lower()]
                                           # Ensure lowercase because consecutive uppercases
                                           # sometimes cause it to spell out the letters.
         subprocess.call(cmd)
@@ -79,6 +104,7 @@ class VoiceOut(object):
 
 def listen(vin, vout, callback,
            callsign='Judy', attention_span=10, forever=True):
+    global running
     vin.daemon = True
     vin.start()
 
@@ -116,4 +142,7 @@ def listen(vin, vout, callback,
             print forever
 
         while 1:
-            time.sleep(10)
+            #time.sleep(10)
+	    if running == False:
+                os.system("sudo killall pocketsphinx_continuous")
+	        os.system("pkill -9 -f testjudy.py")
